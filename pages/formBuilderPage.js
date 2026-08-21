@@ -16,7 +16,7 @@ class FormBuilderPage {
 
     this.textBoxPaletteItem = page.locator('span[data-text="Text Box"]').first();
     this.canvas = page.locator('[class*="canvas"], [data-testid="form-canvas"]');
-    this.saveButton = page.locator('button:has-text("Save")');
+   this.saveButton = page.locator('button[name="save"]');
 
     this.elementLabelInput = page.locator('input#elementLabel, label:has-text("Element label") + input');
     this.minCharInput = page.locator('label:has-text("Min") + input');
