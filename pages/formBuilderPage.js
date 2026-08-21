@@ -15,7 +15,7 @@ class FormBuilderPage {
     this.createAndEditButton = page.locator('button:has-text("Create & edit")');
 
     this.textBoxPaletteItem = page.locator('span[data-text="Text Box"]').first();
-    this.canvas = page.locator('[class*="canvas"], [data-testid="form-canvas"]');
+   this.canvas = page.locator('.formcanvas__leftpane');
    this.saveButton = page.locator('button[name="save"]');
 
     this.elementLabelInput = page.locator('input[name="label"]');
