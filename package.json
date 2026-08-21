@@ -1,0 +1,16 @@
+{
+  "name": "aa-automation-assignment",
+  "version": "1.0.0",
+  "description": "SDET Assignment - Automation Anywhere Community Edition automation (UI + API)",
+  "scripts": {
+    "test": "npx playwright test",
+    "test:ui": "npx playwright test tests/use-case-1-rules-builder",
+    "test:api": "npx playwright test tests/use-case-2-learning-instance",
+    "test:headed": "npx playwright test --headed",
+    "report": "npx playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.47.0",
+    "dotenv": "^16.4.5"
+  }
+}
