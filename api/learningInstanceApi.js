@@ -1,7 +1,3 @@
-// api/learningInstanceApi.js
-// Wraps calls to the Learning Instance API, confirmed from the Network tab:
-//   POST https://community.cloud.automationanywhere.digital/cognitive/v3/learninginstances
-
 const LEARNING_INSTANCE_ENDPOINT = '/cognitive/v3/learninginstances';
 
 /**
@@ -21,9 +17,6 @@ async function createLearningInstance(request, token, name, documentType = 'Invo
       name,
       description: '',
       documentType,
-      // NOTE: the real payload you captured is much larger (fields[], tables[], etc.)
-      // Copy the exact JSON body from the "Payload" tab you saved and paste it here
-      // (minus the sensitive parts), so the request matches what the UI actually sends.
     },
   });
 
