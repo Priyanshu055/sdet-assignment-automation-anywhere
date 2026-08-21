@@ -37,6 +37,9 @@ async addTextBox() {
   const source = this.textBoxPaletteItem;
   const target = this.canvas;
 
+  // make sure the form editor has fully loaded before looking for the palette item
+  await this.page.locator('text=Elements').first().waitFor({ state: 'visible', timeout: 20000 });
+  await source.waitFor({ state: 'visible', timeout: 20000 });
   await source.scrollIntoViewIfNeeded();
   await target.scrollIntoViewIfNeeded();
 
