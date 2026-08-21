@@ -33,22 +33,45 @@ this.tooltipInput = page.locator('textarea[name="toolTip"]');
     await this.createAndEditButton.click();
   }
 
- async addTextBox() {
+async addTextBox() {
   const source = this.textBoxPaletteItem;
   const target = this.canvas;
 
-  const sourceBox = await source.boundingBox();
-  const targetBox = await target.boundingBox();
+  await source.scrollIntoViewIfNeeded();
+  await target.scrollIntoViewIfNeeded();
 
-  await this.page.mouse.move(sourceBox.x + sourceBox.width / 2, sourceBox.y + sourceBox.height / 2);
-  await this.page.mouse.down();
-  await this.page.waitForTimeout(200);
-  await this.page.mouse.move(targetBox.x + targetBox.width / 2, targetBox.y + 50, { steps: 10 });
-  await this.page.waitForTimeout(200);
-  await this.page.mouse.move(targetBox.x + targetBox.width / 2, targetBox.y + 50, { steps: 5 });
-  await this.page.waitForTimeout(200);
-  await this.page.mouse.up();
+  const sourceHandle = await source.elementHandle();
+  const targetHandle = await target.elementHandle();
+
+  await this.page.evaluate(
+    ([sourceEl, targetEl]) => {
+      const dataTransfer = new DataTransfer();
+
+      const fire = (el, type) => {
+        const rect = el.getBoundingClientRect();
+        const event = new DragEvent(type, {
+          bubbles: true,
+          cancelable: true,
+          dataTransfer,
+          clientX: rect.left + rect.width / 2,
+          clientY: rect.top + rect.height / 2,
+        });
+        el.dispatchEvent(event);
+      };
+
+      fire(sourceEl, 'dragstart');
+      fire(targetEl, 'dragenter');
+      fire(targetEl, 'dragover');
+      fire(targetEl, 'drop');
+      fire(sourceEl, 'dragend');
+    },
+    [sourceHandle, targetHandle]
+  );
+
+  await this.page.waitForTimeout(500);
 }
+
+
   async setTextBoxProperties({ label, min, max, hint, tooltip }) {
     if (label) await this.elementLabelInput.fill(label);
     if (min) await this.minCharInput.fill(String(min));
