@@ -33,10 +33,22 @@ this.tooltipInput = page.locator('textarea[name="toolTip"]');
     await this.createAndEditButton.click();
   }
 
-  async addTextBox() {
-    await this.textBoxPaletteItem.dragTo(this.canvas);
-  }
+ async addTextBox() {
+  const source = this.textBoxPaletteItem;
+  const target = this.canvas;
 
+  const sourceBox = await source.boundingBox();
+  const targetBox = await target.boundingBox();
+
+  await this.page.mouse.move(sourceBox.x + sourceBox.width / 2, sourceBox.y + sourceBox.height / 2);
+  await this.page.mouse.down();
+  await this.page.waitForTimeout(200);
+  await this.page.mouse.move(targetBox.x + targetBox.width / 2, targetBox.y + 50, { steps: 10 });
+  await this.page.waitForTimeout(200);
+  await this.page.mouse.move(targetBox.x + targetBox.width / 2, targetBox.y + 50, { steps: 5 });
+  await this.page.waitForTimeout(200);
+  await this.page.mouse.up();
+}
   async setTextBoxProperties({ label, min, max, hint, tooltip }) {
     if (label) await this.elementLabelInput.fill(label);
     if (min) await this.minCharInput.fill(String(min));
