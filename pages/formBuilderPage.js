@@ -11,7 +11,7 @@ class FormBuilderPage {
     this.createButton = page.locator('button:has-text("Create")');
     this.formOption = page.locator('text=Form').first();
 
-    this.formNameInput = page.locator('input[placeholder="Untitled"], input#name');
+    this.formNameInput = page.locator('input[name="name"]');
     this.createAndEditButton = page.locator('button:has-text("Create & edit")');
 
     this.textBoxPaletteItem = page.locator('text=Text Box').first();
