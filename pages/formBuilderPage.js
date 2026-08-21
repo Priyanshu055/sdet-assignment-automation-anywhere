@@ -18,7 +18,7 @@ class FormBuilderPage {
     this.canvas = page.locator('[class*="canvas"], [data-testid="form-canvas"]');
    this.saveButton = page.locator('button[name="save"]');
 
-    this.elementLabelInput = page.locator('input#elementLabel, label:has-text("Element label") + input');
+    this.elementLabelInput = page.locator('input[name="label"]');
     this.minCharInput = page.locator('label:has-text("Min") + input');
     this.maxCharInput = page.locator('label:has-text("Max") + input');
     this.hintInput = page.locator('label:has-text("Hint below field") + textarea, label:has-text("Hint below field") + input');
