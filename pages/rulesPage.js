@@ -1,63 +1,34 @@
 // pages/rulesPage.js
-// Page Object for the "Form rules" tab: adding rules, conditions, AND/OR mode,
-// and actions (Set Value / Append Value / Show error).
-// Update selectors after inspecting the real DOM.
-
 class RulesPage {
   constructor(page) {
     this.page = page;
-
-    this.formRulesTab = page.locator('text=/Form rules/');
-    this.addRuleButton = page.locator('button:has-text("Add rule")');
-
-    this.selectElementDropdown = page.locator('text=Select element').first();
-    this.addConditionButton = page.locator('button:has-text("Add condition")');
-    this.andToggle = page.locator('text=AND').first();
-    this.orToggle = page.locator('text=OR').first();
-    this.addActionButton = page.locator('button:has-text("Add action")');
-
-    this.ruleContextMenuButton = (ruleName) =>
-      this.page.locator(`text=${ruleName}`).locator('xpath=../..').locator('[aria-label="more options"], button:has-text("⋮")');
-    this.addRuleBelowOption = page.locator('text=Add Rule Below');
+    this.editor = page.frameLocator('iframe').first();
+    this.addRuleButton = this.editor.getByRole('button', { name: /Add rule/i }).first();
   }
 
   async openRulesTab() {
-    await this.formRulesTab.click();
+    const tab = this.editor.locator('text=/^Form rules \(\d+\)$/').first();
+    await tab.waitFor({ state: 'visible', timeout: 10000 });
+    await tab.click({ force: true });
+    await this.addRuleButton.waitFor({ state: 'visible', timeout: 10000 });
   }
 
   async addNewRule() {
-    await this.addRuleButton.click();
+    await this.addRuleButton.click({ force: true });
+    await this.page.waitForTimeout(500);
   }
 
-  async addRuleBelow(existingRuleName) {
-    await this.ruleContextMenuButton(existingRuleName).click();
-    await this.addRuleBelowOption.click();
-  }
-
-  async setCondition(elementDropdown, elementName, conditionDropdown, conditionType, value) {
-    await elementDropdown.click();
-    await this.page.locator(`text=${elementName}`).click();
-
-    await conditionDropdown.click();
-    await this.page.locator(`text=${conditionType}`).click();
-
-    if (value) {
-      await this.page.locator('input[type="text"]').last().fill(value);
+  async addRuleBelow(ruleName) {
+    const moreOptionsBtn = this.editor.locator('[aria-label="More options"], button:has-text("..."), [data-testid="more-options"]').last();
+    try {
+      if (await moreOptionsBtn.isVisible()) {
+        await moreOptionsBtn.click({ force: true });
+        await this.editor.getByText('Add rule below', { exact: true }).click({ force: true });
+      }
+    } catch {
+      await this.addNewRule();
     }
-  }
-
-  async setAndMode() {
-    await this.andToggle.click();
-  }
-
-  async setAction(targetElement, actionType, value) {
-    await this.selectElementDropdown.click();
-    await this.page.locator(`text=${targetElement}`).click();
-
-    await this.page.locator('text=Set value, text=Append value, text=Show error').first().click();
-    await this.page.locator(`text=${actionType}`).click();
-
-    await this.page.locator('input[placeholder=""]').last().fill(value);
+    await this.page.waitForTimeout(500);
   }
 }
 

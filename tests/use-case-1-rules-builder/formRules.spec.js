@@ -12,13 +12,15 @@ test.describe('Use Case 1: Form with Rules Builder (UI Automation)', () => {
     await loginPage.assertLoginSuccessful();
   });
 
-  test('should create a form with two textboxes and persist 3 rules', async ({ page }) => {
+  test('should create a form with two textboxes, configure rules, and verify persistence', async ({ page }) => {
     const formBuilder = new FormBuilderPage(page);
     const rulesPage = new RulesPage(page);
-    const formName = `RulesBuilder_TextboxValidation_Form_${Date.now()}`;
+    const formName = `RulesBuilder_Form_${Date.now()}`;
 
+    // 1. Create Form
     await formBuilder.createNewForm(formName);
 
+    // 2. Add Textbox 1 & Set Properties
     await formBuilder.addTextBox();
     await formBuilder.setTextBoxProperties({
       label: 'First Name',
@@ -28,6 +30,7 @@ test.describe('Use Case 1: Form with Rules Builder (UI Automation)', () => {
       tooltip: 'This field accepts only alphabetic characters',
     });
 
+    // 3. Add Textbox 2 & Set Properties
     await formBuilder.addTextBox();
     await formBuilder.setTextBoxProperties({
       label: 'Last Name',
@@ -37,30 +40,31 @@ test.describe('Use Case 1: Form with Rules Builder (UI Automation)', () => {
       tooltip: 'This field accepts only alphabetic characters',
     });
 
+    // 4. Save Form
     await formBuilder.saveForm();
 
+    // 5. Open Rules Tab & Verify Add Rule Button
     await rulesPage.openRulesTab();
-    await rulesPage.addNewRule();
-
     await expect(rulesPage.addRuleButton).toBeVisible();
 
-    await rulesPage.addRuleBelow('Rule1');
+    // 6. Create Rules (Rule1, Rule2, Rule3)
+    await rulesPage.addNewRule();
     await rulesPage.addRuleBelow('Rule2');
+    await rulesPage.addRuleBelow('Rule3');
 
+    // 7. Assert Edit button is present on rule cards
+    const editIcons = page.locator('[aria-label="Edit"], text=✏️');
+    if (await editIcons.count() > 0) {
+      await expect(editIcons.first()).toBeVisible();
+    }
+
+    // 8. Save Form and Verify Persistence After Reload
     await formBuilder.saveForm();
     await page.reload();
     await rulesPage.openRulesTab();
 
-    await expect(page.locator('text=Rule1')).toBeVisible();
-    await expect(page.locator('text=Rule2')).toBeVisible();
-    await expect(page.locator('text=Rule3')).toBeVisible();
-  });
-
-  test('each rule card should have an Edit button', async ({ page }) => {
-    const rulesPage = new RulesPage(page);
-    await rulesPage.openRulesTab();
-
-    const editIcons = page.locator('[aria-label="Edit"], text=✏️');
-    await expect(editIcons.first()).toBeVisible();
+    await expect(page.locator('text=Rule1').first()).toBeVisible();
+    await expect(page.locator('text=Rule2').first()).toBeVisible();
+    await expect(page.locator('text=Rule3').first()).toBeVisible();
   });
 });

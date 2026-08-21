@@ -1,4 +1,3 @@
-// playwright.config.js
 require('dotenv').config();
 const { defineConfig, devices } = require('@playwright/test');
 
@@ -18,6 +17,14 @@ module.exports = defineConfig({
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
     actionTimeout: 15 * 1000,
+    permissions: [],
+    launchOptions: {
+      args: [
+        '--deny-permission-prompts',
+        '--disable-notifications',
+        '--disable-popup-blocking',
+      ],
+    },
   },
 
   projects: [
