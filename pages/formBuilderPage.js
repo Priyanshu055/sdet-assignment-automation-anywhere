@@ -21,8 +21,8 @@ class FormBuilderPage {
     this.elementLabelInput = page.locator('input[name="label"]');
    this.minCharInput = page.locator('input[name="minLength"]');
 this.maxCharInput = page.locator('input[name="maxLength"]');
-    this.hintInput = page.locator('label:has-text("Hint below field") + textarea, label:has-text("Hint below field") + input');
-    this.tooltipInput = page.locator('label:has-text("Tool tip") + textarea');
+  this.hintInput = page.locator('label:has-text("Hint below field") + textarea, label:has-text("Hint below field") + input');
+this.tooltipInput = page.locator('label:has-text("Tool tip") + textarea');
   }
 
   async createNewForm(formName) {
