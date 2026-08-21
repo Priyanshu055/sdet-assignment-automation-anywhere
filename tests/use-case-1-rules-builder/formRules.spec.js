@@ -15,8 +15,9 @@ test.describe('Use Case 1: Form with Rules Builder (UI Automation)', () => {
   test('should create a form with two textboxes and persist 3 rules', async ({ page }) => {
     const formBuilder = new FormBuilderPage(page);
     const rulesPage = new RulesPage(page);
+    const formName = `RulesBuilder_TextboxValidation_Form_${Date.now()}`;
 
-    await formBuilder.createNewForm('RulesBuilder_TextboxValidation_Form_Auto');
+    await formBuilder.createNewForm(formName);
 
     await formBuilder.addTextBox();
     await formBuilder.setTextBoxProperties({
