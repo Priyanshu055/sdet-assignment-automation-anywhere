@@ -40,37 +40,34 @@ async addTextBox() {
   await source.scrollIntoViewIfNeeded();
   await target.scrollIntoViewIfNeeded();
 
-  const sourceHandle = await source.elementHandle();
-  const targetHandle = await target.elementHandle();
+  const sourceBox = await source.boundingBox();
+  const targetBox = await target.boundingBox();
 
-  await this.page.evaluate(
-    ([sourceEl, targetEl]) => {
-      const dataTransfer = new DataTransfer();
+  if (!sourceBox || !targetBox) {
+    throw new Error('Could not get bounding box for source or target element');
+  }
 
-      const fire = (el, type) => {
-        const rect = el.getBoundingClientRect();
-        const event = new DragEvent(type, {
-          bubbles: true,
-          cancelable: true,
-          dataTransfer,
-          clientX: rect.left + rect.width / 2,
-          clientY: rect.top + rect.height / 2,
-        });
-        el.dispatchEvent(event);
-      };
+  const startX = sourceBox.x + sourceBox.width / 2;
+  const startY = sourceBox.y + sourceBox.height / 2;
+  const endX = targetBox.x + targetBox.width / 2;
+  const endY = targetBox.y + Math.min(60, targetBox.height / 2);
 
-      fire(sourceEl, 'dragstart');
-      fire(targetEl, 'dragenter');
-      fire(targetEl, 'dragover');
-      fire(targetEl, 'drop');
-      fire(sourceEl, 'dragend');
-    },
-    [sourceHandle, targetHandle]
-  );
+  await this.page.mouse.move(startX, startY);
+  await this.page.mouse.down();
+  await this.page.waitForTimeout(300);
 
+  const steps = 25;
+  for (let i = 1; i <= steps; i++) {
+    const x = startX + ((endX - startX) * i) / steps;
+    const y = startY + ((endY - startY) * i) / steps;
+    await this.page.mouse.move(x, y);
+    await this.page.waitForTimeout(30);
+  }
+
+  await this.page.waitForTimeout(300);
+  await this.page.mouse.up();
   await this.page.waitForTimeout(500);
 }
-
 
   async setTextBoxProperties({ label, min, max, hint, tooltip }) {
     if (label) await this.elementLabelInput.fill(label);
