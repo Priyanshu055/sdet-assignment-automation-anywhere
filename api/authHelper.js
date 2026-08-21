@@ -1,11 +1,7 @@
-// api/authHelper.js
-// Handles authenticating via the Automation Anywhere API and returning the token
-// to use in subsequent requests (X-Authorization header, as seen in the Network tab).
-
 /**
  * Logs in via API and returns the auth token.
- * NOTE: Confirm the exact login endpoint + payload shape by watching the
- * Network tab during a real login (Network tab -> Preserve log -> log out -> log in).
+ * Check the real login response shape and update the field name below
+ * (token / access_token / value) once confirmed against the actual API.
  *
  * @param {import('@playwright/test').APIRequestContext} request
  * @returns {Promise<string>} auth token
@@ -23,8 +19,6 @@ async function getAuthToken(request) {
   }
 
   const body = await response.json();
-  // The exact field name may differ (token / access_token / value) -
-  // check the real response JSON and update this line.
   return body.token || body.access_token || body.value;
 }
 
