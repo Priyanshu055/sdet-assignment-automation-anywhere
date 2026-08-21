@@ -23,6 +23,7 @@ class LoginPage {
   }
 
   async assertLoginSuccessful() {
+    // redirects to /home after successful login
     await this.page.waitForURL('**/home**', { timeout: 20000 });
   }
 }
