@@ -8,7 +8,7 @@ class FormBuilderPage {
     this.page = page;
 
     this.automationMenu = page.locator('a[name="automations"]');
-    this.createButton = page.locator('button:has-text("Create")');
+   this.createButton = page.locator('span[data-text="Create"]');
     this.formOption = page.locator('text=Form').first();
 
     this.formNameInput = page.locator('input[name="name"]');
