@@ -25,13 +25,24 @@ this.maxCharInput = page.locator('input[name="maxLength"]');
 this.tooltipInput = page.locator('textarea[name="toolTip"]');
   }
 
-  async createNewForm(formName) {
-    await this.automationMenu.click();
-    await this.createButton.click();
-    await this.formOption.click();
-    await this.formNameInput.fill(formName);
-    await this.createAndEditButton.click();
+ async createNewForm(formName) {
+  await this.automationMenu.click();
+  await this.dismissPermissionPopupIfPresent();
+  await this.createButton.click();
+  await this.formOption.click();
+  await this.formNameInput.fill(formName);
+  await this.createAndEditButton.click();
+}
+
+async dismissPermissionPopupIfPresent() {
+  const blockButton = this.page.locator('button:has-text("Block")');
+  try {
+    await blockButton.waitFor({ state: 'visible', timeout: 5000 });
+    await blockButton.click();
+  } catch {
+    // popup didn't appear this time - nothing to do
   }
+}
 
 async addTextBox() {
   const source = this.textBoxPaletteItem;
