@@ -10,14 +10,12 @@ class RulesPage {
     this.formRulesTab = page.locator('text=/Form rules/');
     this.addRuleButton = page.locator('button:has-text("Add rule")');
 
-    // Within a rule card
     this.selectElementDropdown = page.locator('text=Select element').first();
     this.addConditionButton = page.locator('button:has-text("Add condition")');
     this.andToggle = page.locator('text=AND').first();
     this.orToggle = page.locator('text=OR').first();
     this.addActionButton = page.locator('button:has-text("Add action")');
 
-    // Rule card context menu ( ⋮ ) -> "Add Rule Below"
     this.ruleContextMenuButton = (ruleName) =>
       this.page.locator(`text=${ruleName}`).locator('xpath=../..').locator('[aria-label="more options"], button:has-text("⋮")');
     this.addRuleBelowOption = page.locator('text=Add Rule Below');
@@ -36,12 +34,6 @@ class RulesPage {
     await this.addRuleBelowOption.click();
   }
 
-  /**
-   * Selects an element + condition type for a condition row.
-   * elementDropdown / conditionDropdown are Locators passed in from the spec
-   * (there can be multiple condition rows on the page, so the spec is
-   * responsible for scoping to the right row).
-   */
   async setCondition(elementDropdown, elementName, conditionDropdown, conditionType, value) {
     await elementDropdown.click();
     await this.page.locator(`text=${elementName}`).click();
@@ -62,7 +54,6 @@ class RulesPage {
     await this.selectElementDropdown.click();
     await this.page.locator(`text=${targetElement}`).click();
 
-    // action type dropdown (Set Value / Append Value / Show error)
     await this.page.locator('text=Set value, text=Append value, text=Show error').first().click();
     await this.page.locator(`text=${actionType}`).click();
 
