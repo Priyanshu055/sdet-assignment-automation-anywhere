@@ -1,37 +1,28 @@
 const LEARNING_INSTANCE_ENDPOINT = '/cognitive/v3/learninginstances';
+const payloadTemplate = require('../fixtures/learningInstancePayload.json');
 
 /**
- * Creates a Learning Instance with the given name and document type.
+ * Creates a Learning Instance with the given name.
+ * Uses the exact payload structure captured from the real UI (see
+ * fixtures/learningInstancePayload.json), just overriding the name so each
+ * test run creates a uniquely-named instance.
+ *
  * @param {import('@playwright/test').APIRequestContext} request
  * @param {string} token - value captured from authHelper.getAuthToken()
  * @param {string} name
- * @param {string} documentType - e.g. "Invoice"
  */
-async function createLearningInstance(
-  request,
-  token,
-  name,
-  documentType = 'Invoice',
-  domainId,
-  providerId,
-  domainLanguageProviderId,
-  languageId
-) {
+async function createLearningInstance(request, token, name) {
+  const payload = {
+    ...payloadTemplate,
+    name,
+  };
+
   const response = await request.post(LEARNING_INSTANCE_ENDPOINT, {
     headers: {
       'Content-Type': 'application/json',
       'X-Authorization': token,
     },
-    data: {
-      name,
-      description: '',
-      documentType,
-      domainId,
-      providerId,
-      domainLanguageProviderId,
-      domainLanguageProvider_id: languageId,
-      languageId,
-    },
+    data: payload,
   });
 
   if (!response.ok()) {
