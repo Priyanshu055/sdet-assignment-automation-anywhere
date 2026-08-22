@@ -13,9 +13,10 @@ async function getAuthToken(playwrightInstance) {
   const page = await context.newPage();
 
   const authResponsePromise = page.waitForResponse(
-    (response) => response.url().includes('/authentication') && response.request().method() === 'POST',
-    { timeout: 45000 }
-  );
+  (response) => response.url().includes('/v2/authentication') && response.request().method() === 'POST',
+  { timeout: 45000 }
+);
+
 
   await page.goto(process.env.BASE_URL, { waitUntil: 'domcontentloaded' });
 
