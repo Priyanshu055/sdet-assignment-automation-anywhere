@@ -56,7 +56,7 @@ test.describe('Use Case 1: Form with Rules Builder (UI Automation)', () => {
     await rulesPage.addRuleBelow('Rule2');
 
     // 8. Assert Edit button is present on rule cards
-    const editIcons = page.locator('[aria-label="Edit"], text=✏️');
+    const editIcons = rulesPage.editor.locator('[aria-label="Edit"], text=✏️');
     if (await editIcons.count() > 0) {
       await expect(editIcons.first()).toBeVisible();
     }
@@ -66,8 +66,8 @@ test.describe('Use Case 1: Form with Rules Builder (UI Automation)', () => {
     await page.reload();
     await rulesPage.openRulesTab();
 
-    await expect(page.locator('text=Rule1').first()).toBeVisible();
-    await expect(page.locator('text=Rule2').first()).toBeVisible();
-    await expect(page.locator('text=Rule3').first()).toBeVisible();
+    await expect(rulesPage.editor.getByText('Rule1', { exact: true }).first()).toBeVisible();
+    await expect(rulesPage.editor.getByText('Rule2', { exact: true }).first()).toBeVisible();
+    await expect(rulesPage.editor.getByText('Rule3', { exact: true }).first()).toBeVisible();
   });
 });

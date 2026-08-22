@@ -1,6 +1,7 @@
 class FormBuilderPage {
   constructor(page) {
     this.page = page;
+    this.editor = page.frameLocator('iframe').first();
 
     this.automationMenu = page.locator('a[name="automations"]');
     this.createButton = page.locator('span[data-text="Create"]');
@@ -9,15 +10,16 @@ class FormBuilderPage {
     this.formNameInput = page.locator('input[name="name"]');
     this.createAndEditButton = page.locator('button:has-text("Create & edit")');
 
-    this.textBoxPaletteItem = page.locator('span[data-text="Text Box"]').first();
-    this.canvas = page.locator('.formcanvas__leftpane');
-    this.saveButton = page.locator('button[name="save"]');
+    this.elementsSection = this.editor.getByRole('button', { name: 'Elements', exact: true });
+    this.textBoxPaletteItem = this.editor.getByRole('button', { name: /Text Box/ }).first();
+    this.canvas = this.editor.locator('.formcanvas__leftpane').first();
+    this.saveButton = this.editor.locator('button[name="save"]').first();
 
-    this.elementLabelInput = page.locator('input[name="label"]');
-    this.minCharInput = page.locator('input[name="minLength"]');
-    this.maxCharInput = page.locator('input[name="maxLength"]');
-    this.hintInput = page.locator('input[name="hintText"]');
-    this.tooltipInput = page.locator('textarea[name="toolTip"]');
+    this.elementLabelInput = this.editor.locator('input[name="label"]').first();
+    this.minCharInput = this.editor.locator('input[name="minLength"]').first();
+    this.maxCharInput = this.editor.locator('input[name="maxLength"]').first();
+    this.hintInput = this.editor.locator('input[name="hintText"]').first();
+    this.tooltipInput = this.editor.locator('textarea[name="toolTip"]').first();
   }
 
   async createNewForm(formName) {
@@ -45,16 +47,18 @@ class FormBuilderPage {
     const source = this.textBoxPaletteItem;
     const target = this.canvas;
 
-    await this.page.locator('text=Elements').first().waitFor({ state: 'visible', timeout: 20000 });
-    await source.waitFor({ state: 'visible', timeout: 20000 });
+    if (!(await source.isVisible({ timeout: 3000 }).catch(() => false))) {
+      await this.elementsSection.click({ force: true });
+    }
+    await source.waitFor({ state: 'visible', timeout: 60000 });
     await source.scrollIntoViewIfNeeded();
+    await target.waitFor({ state: 'visible', timeout: 15000 });
     await target.scrollIntoViewIfNeeded();
 
     const sourceBox = await source.boundingBox();
     const targetBox = await target.boundingBox();
-
     if (!sourceBox || !targetBox) {
-      throw new Error('Could not get bounding box for source or target element');
+      throw new Error('Could not locate the Text Box palette item or form canvas');
     }
 
     const startX = sourceBox.x + sourceBox.width / 2;
@@ -65,18 +69,10 @@ class FormBuilderPage {
     await this.page.mouse.move(startX, startY);
     await this.page.mouse.down();
     await this.page.waitForTimeout(300);
-
-    const steps = 25;
-    for (let i = 1; i <= steps; i++) {
-      const x = startX + ((endX - startX) * i) / steps;
-      const y = startY + ((endY - startY) * i) / steps;
-      await this.page.mouse.move(x, y);
-      await this.page.waitForTimeout(30);
-    }
-
+    await this.page.mouse.move(endX, endY, { steps: 30 });
     await this.page.waitForTimeout(300);
     await this.page.mouse.up();
-    await this.page.waitForTimeout(500);
+    await this.page.waitForTimeout(1000);
   }
 
   async setTextBoxProperties({ label, min, max, hint, tooltip }) {
