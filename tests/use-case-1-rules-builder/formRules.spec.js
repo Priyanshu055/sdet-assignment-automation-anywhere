@@ -47,18 +47,21 @@ test.describe('Use Case 1: Form with Rules Builder (UI Automation)', () => {
     await rulesPage.openRulesTab();
     await expect(rulesPage.addRuleButton).toBeVisible();
 
-    // 6. Create Rules (Rule1, Rule2, Rule3)
+    // 6. Create Rule1 and configure its condition, AND mode, and action
     await rulesPage.addNewRule();
-    await rulesPage.addRuleBelow('Rule2');
-    await rulesPage.addRuleBelow('Rule3');
+    await rulesPage.configureRule1('First Name - TextBox0', 'Last Name - TextBox1', 'Last Name - TextBox1', 'Verified');
 
-    // 7. Assert Edit button is present on rule cards
+    // 7. Create Rule2 and Rule3 via context menu
+    await rulesPage.addRuleBelow('Rule1');
+    await rulesPage.addRuleBelow('Rule2');
+
+    // 8. Assert Edit button is present on rule cards
     const editIcons = page.locator('[aria-label="Edit"], text=✏️');
     if (await editIcons.count() > 0) {
       await expect(editIcons.first()).toBeVisible();
     }
 
-    // 8. Save Form and Verify Persistence After Reload
+    // 9. Save Form and Verify Persistence After Reload
     await formBuilder.saveForm();
     await page.reload();
     await rulesPage.openRulesTab();
