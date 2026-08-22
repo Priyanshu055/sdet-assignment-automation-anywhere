@@ -35,7 +35,7 @@ playwright.config.js
    ```
 
 3. **Configure environment variables**
-   - Copy `.env.example` to `.env`
+   - Copy  `.env`
    - Fill in your Automation Anywhere Community Edition credentials:
      ```
      BASE_URL=https://community.cloud.automationanywhere.digital
