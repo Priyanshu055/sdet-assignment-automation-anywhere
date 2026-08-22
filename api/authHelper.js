@@ -1,42 +1,32 @@
 /**
- * Gets an API token from the configured environment or login endpoint.
+ * Gets a fresh auth token by performing a real UI login in a background
+ * browser and capturing the token from the /v2/authentication response.
+ * This avoids needing to replicate the app's password encryption, since the
+ * real browser handles it exactly the way the app expects.
  *
- * @param {import('@playwright/test').APIRequestContext} request
+ * @param {import('@playwright/test').PlaywrightWorkerArgs['playwright']} playwrightInstance
  * @returns {Promise<string>} auth token
  */
-async function getAuthToken(request) {
-  const details = await getAuthDetails(request);
-  return details.token;
+async function getAuthToken(playwrightInstance) {
+  const browser = await playwrightInstance.chromium.launch();
+  const context = await browser.newContext();
+  const page = await context.newPage();
+
+  const authResponsePromise = page.waitForResponse(
+    (response) => response.url().includes('/v2/authentication') && response.request().method() === 'POST'
+  );
+
+  await page.goto(process.env.BASE_URL);
+  await page.locator('input[name="username"]').fill(process.env.AA_USERNAME);
+  await page.locator('input[name="password"]').fill(process.env.AA_PASSWORD);
+  await page.locator('button[name="submitLogin"]').click();
+
+  const authResponse = await authResponsePromise;
+  const body = await authResponse.json();
+
+  await browser.close();
+
+  return body.token;
 }
 
-async function getAuthDetails(request) {
-  if (process.env.AA_API_TOKEN) {
-    return {
-      token: process.env.AA_API_TOKEN,
-      domainId: process.env.AA_DOMAIN_ID,
-    };
-  }
-
-  if (!process.env.AA_AUTH_ENDPOINT) {
-    throw new Error('Set AA_API_TOKEN or AA_AUTH_ENDPOINT from the browser Network request');
-  }
-
-  const response = await request.post(process.env.AA_AUTH_ENDPOINT, {
-    data: {
-      username: process.env.AA_USERNAME,
-      password: process.env.AA_PASSWORD,
-    },
-  });
-
-  if (!response.ok()) {
-    throw new Error(`Login failed with status ${response.status()}: ${await response.text()}`);
-  }
-
-  const body = await response.json();
-  return {
-    token: body.token || body.access_token || body.value,
-    domainId: body.domainId || body.tenantUuid,
-  };
-}
-
-module.exports = { getAuthToken, getAuthDetails };
+module.exports = { getAuthToken };

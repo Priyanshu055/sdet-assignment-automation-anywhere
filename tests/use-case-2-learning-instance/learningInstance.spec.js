@@ -7,12 +7,8 @@ test.describe('Use Case 2: Learning Instance API Flow (API Automation)', () => {
   let token;
 
   test.beforeAll(async ({ playwright }) => {
-    const requestContext = await playwright.request.newContext({
-      baseURL: process.env.BASE_URL,
-    });
-    token = await getAuthToken(requestContext);
+    token = await getAuthToken(playwright);
     expect(token).toBeTruthy();
-    await requestContext.dispose();
   });
 
   test('should create a Learning Instance of type Invoice and validate the response', async ({ request }) => {
@@ -25,9 +21,9 @@ test.describe('Use Case 2: Learning Instance API Flow (API Automation)', () => {
     const body = await response.json();
 
     expect(body).toHaveProperty('name', instanceName);
-expect(body).toHaveProperty('id');
-expect(body).toHaveProperty('domain.name', 'Invoices');
-expect(body).toHaveProperty('status');
+    expect(body).toHaveProperty('id');
+    expect(body).toHaveProperty('domain.name', 'Invoices');
+    expect(body).toHaveProperty('status');
   });
 
   test('response time should be within an acceptable threshold', async ({ request }) => {
