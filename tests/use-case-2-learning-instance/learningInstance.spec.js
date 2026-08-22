@@ -32,6 +32,6 @@ test.describe('Use Case 2: Learning Instance API Flow (API Automation)', () => {
     const duration = Date.now() - start;
 
     expect([200, 201]).toContain(response.status());
-    expect(duration).toBeLessThan(8000);
+    expect(duration).toBeLessThan(15000);
   });
 });

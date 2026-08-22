@@ -20,6 +20,8 @@ class FormBuilderPage {
     this.maxCharInput = this.editor.locator('input[name="maxLength"]').first();
     this.hintInput = this.editor.locator('input[name="hintText"]').first();
     this.tooltipInput = this.editor.locator('textarea[name="toolTip"]').first();
+    
+    this.textboxCount = 0;
   }
 
   async createNewForm(formName) {
@@ -64,7 +66,10 @@ class FormBuilderPage {
     const startX = sourceBox.x + sourceBox.width / 2;
     const startY = sourceBox.y + sourceBox.height / 2;
     const endX = targetBox.x + targetBox.width / 2;
-    const endY = targetBox.y + Math.min(60, targetBox.height / 2);
+    const endY = targetBox.y + Math.min(60, targetBox.height / 2) + (this.textboxCount * 120);
+
+    console.log(`Dragging textbox #${this.textboxCount} to offset endY: ${endY}`);
+    this.textboxCount++;
 
     await this.page.mouse.move(startX, startY);
     await this.page.mouse.down();
@@ -85,6 +90,27 @@ class FormBuilderPage {
 
   async saveForm() {
     await this.saveButton.click();
+    await this.page.waitForTimeout(5000);
+  }
+
+  async closeEditor() {
+    const closeBtn = this.editor.locator('button:has-text("Close"), button:has-text("Cancel")').first();
+    await closeBtn.waitFor({ state: 'visible', timeout: 10000 });
+    await closeBtn.click({ force: true });
+    await this.page.waitForTimeout(3000);
+  }
+
+  async reopenForm(formName) {
+    const searchInput = this.page.locator('input[placeholder*="Search"]').first();
+    await searchInput.waitFor({ state: 'visible', timeout: 15000 });
+    await searchInput.fill(formName);
+    await this.page.keyboard.press('Enter');
+    await this.page.waitForTimeout(3000);
+
+    const formLink = this.page.locator('a').filter({ hasText: /RulesBuilder_Form_/ }).first();
+    await formLink.waitFor({ state: 'visible', timeout: 15000 });
+    await formLink.click();
+    await this.page.waitForTimeout(5000);
   }
 }
 
